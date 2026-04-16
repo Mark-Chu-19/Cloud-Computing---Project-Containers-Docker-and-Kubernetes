@@ -1,0 +1,59 @@
+# Global configuration for the weCloud project
+weCloud:
+  imageRegistry:
+    # Path to your Google Artifact Registry
+    gcp: "us-east1-docker.pkg.dev/gcp-docker-kubernetes-1019/wecloudchat-repo"
+
+# Configuration for the Profile Service
+profile:
+  # The base name used for the deployment and service
+  releaseName: "spring-profile"
+  replicaCount: 3
+  # The specific image name in the registry
+  repository: "profile-service"
+  tag: "task3"
+  service:
+    type: "NodePort"
+    port: 80
+    targetPort: 8080
+
+# Configuration for the Chat Service
+chat:
+  releaseName: "spring-chat"
+  replicaCount: 3
+  repository: "chat-service"
+  tag: "task4"
+  # Internal DNS endpoint for the Profile Service, used in configMap-chat.yaml
+  profileEndpoints: "spring-profile-service.default.svc.cluster.local"
+  service:
+    type: "NodePort"
+    port: 80
+    targetPort: 8080
+
+# Configuration for the Login Service
+login:
+  releaseName: "spring-login"
+  replicaCount: 3
+  repository: "login-service"
+  tag: "task4"
+  # External Ingress IP for authentication redirection
+  redirectIp: "35.237.36.36"
+  service:
+    type: "NodePort"
+    port: 80
+    targetPort: 8080
+
+# Below are the values used in the redis service
+# DO NOT MODIFY these values as per the lab instructions
+redis:
+  image: "redis:7"
+  host: "redis-service"
+  password: "YOUR_SECURE_PASSWORD"
+  passwordSecret: "redis-secret"
+  passwordKey: "REDIS_PASSWORD"
+  port: "6379"
+  containerPort: 6379
+  topic: "/topic/messages"
+  service:
+    port: 6379
+    targetPort: 6379

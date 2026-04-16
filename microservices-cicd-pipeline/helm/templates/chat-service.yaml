@@ -1,0 +1,13 @@
+{{- if eq .Values.global.environment "gcp" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: spring-chat-service
+spec:
+  type: {{ .Values.chat.service.type }}
+  ports:
+  - port: {{ .Values.chat.service.port }}
+    targetPort: {{ .Values.chat.service.targetPort }}
+  selector:
+    app: chat-service
+{{- end }}

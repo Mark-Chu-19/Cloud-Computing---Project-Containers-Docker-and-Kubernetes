@@ -1,0 +1,2 @@
+.DS_Store\n**/target/\n**/*.class\n**/*.jar\n**/*.war\n**/*.ear\n.idea/\n*.iml\n*.iws\n.project\n.classpath\n.settings/\n.vscode/\n*.log\nnode_modules/
+\n**/target/

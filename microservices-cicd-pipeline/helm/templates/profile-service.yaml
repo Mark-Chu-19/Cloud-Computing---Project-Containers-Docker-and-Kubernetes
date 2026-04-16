@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: spring-profile-service 
+spec:
+  type: {{ .Values.profile.service.type }}
+  ports:
+  - port: {{ .Values.profile.service.port }}
+    targetPort: {{ .Values.profile.service.targetPort }}
+  selector:
+    app: profile-service 

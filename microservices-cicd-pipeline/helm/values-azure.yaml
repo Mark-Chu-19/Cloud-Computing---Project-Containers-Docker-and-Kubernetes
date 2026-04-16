@@ -1,0 +1,43 @@
+global:
+  environment: azure
+
+weCloud:
+  imageRegistry:
+    gcp: wecloudacr02161317.azurecr.io
+
+login:
+  repository: login-service
+  tag: task4
+  redirectIp: "52.226.213.24"
+
+  # 只有在 hpa.enabled=false 時才會用到（你 template 改成 conditional 之後）
+  replicaCount: 3
+
+  hpa:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 50
+    cpuRequest: "200m"
+
+profile:
+  repository: profile-service
+  tag: task3
+
+  replicaCount: 3
+
+  hpa:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 50
+    cpuRequest: "200m"
+
+mysql:
+  login:
+    username: root
+    password: YOUR_SECURE_PASSWORD
+  profile:
+    username: root
+    password: YOUR_SECURE_PASSWORD
+

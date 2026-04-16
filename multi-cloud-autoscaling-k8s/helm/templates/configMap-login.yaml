@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  # This name must match the env reference in login-deployment.yaml
+  name: login-config
+data:
+  # Pointing to the MySQL service from Task 2
+  MYSQL_DB_HOST: "mysql-login"
+  MYSQL_DB_PORT: "3306"
+  CHAT_ENDPOINT: "35.237.36.36"

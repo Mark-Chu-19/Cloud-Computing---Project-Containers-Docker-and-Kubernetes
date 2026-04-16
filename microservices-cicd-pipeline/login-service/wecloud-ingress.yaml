@@ -1,0 +1,42 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"networking.k8s.io/v1","kind":"Ingress","metadata":{"annotations":{},"name":"wecloud-ingress","namespace":"default"},"spec":{"rules":[{"http":{"paths":[{"backend":{"service":{"name":"spring-chat-service","port":{"number":8080}}},"path":"/chat","pathType":"Prefix"},{"backend":{"service":{"name":"spring-login-service","port":{"number":8080}}},"path":"/login","pathType":"Prefix"},{"backend":{"service":{"name":"spring-profile-service","port":{"number":8080}}},"path":"/profile","pathType":"Prefix"}]}}]}}
+  creationTimestamp: "2026-02-16T00:03:36Z"
+  generation: 2
+  name: wecloud-ingress
+  namespace: default
+  resourceVersion: "1771200530233391020"
+  uid: a79ce87f-55ea-4c2f-adfa-4121d28ad30c
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - backend:
+          service:
+            name: spring-chat-service
+            port:
+              number: 80
+        path: /chat
+        pathType: Prefix
+      - backend:
+          service:
+            name: spring-login-service
+            port:
+              number: 80
+        path: /login
+        pathType: Prefix
+      - backend:
+          service:
+            name: spring-profile-service
+            port:
+              number: 80
+        path: /profile
+        pathType: Prefix
+status:
+  loadBalancer:
+    ingress:
+    - ip: 34.75.219.235

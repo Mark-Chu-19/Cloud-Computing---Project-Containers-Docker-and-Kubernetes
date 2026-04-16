@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  # Standard name for the Chat Service deployment
+  name: spring-chat-deployment
+spec:
+  # Set the number of replicas as defined in values.yaml
+  replicas: {{ .Values.chat.replicaCount }}
+  selector:
+    matchLabels:
+      app: chat-service
+  template:
+    metadata:
+      labels:
+        app: chat-service
+    spec:
+      containers:
+      - name: chat-service
+        # Full image path constructed from global registry and chat values
+        image: {{ .Values.weCloud.imageRegistry.gcp }}/{{ .Values.chat.repository }}:{{ .Values.chat.tag }}
+        ports:
+        - containerPort: 8080
+        env:
+        # 1. MySQL Database connection info from ConfigMap/Secret
+        - name: MYSQL_DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: spring-chat-config
+              key: MYSQL_DB_HOST
+        - name: MYSQL_DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: spring-chat-config
+              key: MYSQL_DB_PORT
+        - name: MYSQL_DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: chat-secret
+              key: mysql-username
+        - name: MYSQL_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: chat-secret
+              key: mysql-password
+        # 2. Redis connection info using variables from values.yaml
+        - name: SPRING_REDIS_HOST
+          value: {{ .Values.redis.host | quote }}
+        - name: SPRING_REDIS_PORT
+          value: {{ .Values.redis.port | quote }}
+        - name: SPRING_REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.redis.passwordSecret | quote }}
+              key: {{ .Values.redis.passwordKey | quote }}
+        - name: LIST_OF_PROFILE_ENDPOINTS
+          valueFrom:
+            configMapKeyRef:
+              name: spring-chat-config
+              key: LIST_OF_PROFILE_ENDPOINTS

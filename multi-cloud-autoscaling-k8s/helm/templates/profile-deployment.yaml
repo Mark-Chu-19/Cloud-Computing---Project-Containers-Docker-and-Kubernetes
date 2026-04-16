@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  # Using the release name from values.yaml to ensure consistency
+  name: {{ .Values.profile.releaseName }}-deployment
+spec:
+  {{- if not .Values.login.hpa.enabled }}
+  # Scaling to 3 replicas as specified in the configuration
+  # replicas: managed by HPA
+  {{- end }}
+  selector:
+    matchLabels:
+      # Labels must match the template and service selector
+      app: profile-service
+  template:
+    metadata:
+      labels:
+        app: profile-service
+    spec:
+      containers:
+      - name: profile-service
+        # Combining registry, repository, and tag for the full image path
+        image: {{ .Values.weCloud.imageRegistry.gcp }}/{{ .Values.profile.repository }}:{{ .Values.profile.tag }}
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            cpu: {{ .Values.profile.hpa.cpuRequest }}
+        env:
+        # 1. Database Connection details from ConfigMap
+        - name: MYSQL_DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: profile-config
+              key: MYSQL_DB_HOST
+        - name: MYSQL_DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: profile-config
+              key: MYSQL_DB_PORT
+        - name: MYSQL_DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: profile-config
+              key: MYSQL_DB_NAME
+        # 2. Database Authentication from Secret
+        - name: MYSQL_DB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: profile-secret
+              key: mysql-username
+        - name: MYSQL_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: profile-secret
+              key: mysql-password
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: spring-profile-autoscaling
+  namespace: default
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: spring-profile-deployment
+  minReplicas: {{ .Values.profile.hpa.minReplicas }}
+  maxReplicas: {{ .Values.profile.hpa.maxReplicas }}
+  targetCPUUtilizationPercentage: {{ .Values.profile.hpa.targetCPUUtilizationPercentage }}

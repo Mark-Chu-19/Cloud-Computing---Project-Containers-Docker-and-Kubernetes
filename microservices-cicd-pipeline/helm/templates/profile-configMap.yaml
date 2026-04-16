@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: profile-config
+data:
+  MYSQL_DB_HOST: "mysql-profile"
+  MYSQL_DB_PORT: "3306"
+  MYSQL_DB_NAME: "profile_db"

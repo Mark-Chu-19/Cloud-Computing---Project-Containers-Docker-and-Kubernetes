@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  # Use Helm variable for the name
+  name: {{ .Values.profile.releaseName }}-deployment
+spec:
+  replicas: {{ .Values.profile.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.profile.releaseName }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.profile.releaseName }}
+    spec:
+      containers:
+      - name: profile-service
+        # Dynamically build image path from values.yaml
+        image: {{ .Values.profile.repository }}:{{ .Values.profile.tag }}
+        ports:
+        - containerPort: 8080
+        env:
+        # 1. Database Host and Port from ConfigMap
+        - name: MYSQL_DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: profile-config
+              key: MYSQL_DB_HOST
+        - name: MYSQL_DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: profile-config
+              key: MYSQL_DB_PORT
+        # 2. Database Username and Password from Secret
+        - name: MYSQL_DB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: profile-secret
+              key: mysql-username
+        - name: MYSQL_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: profile-secret
+              key: mysql-password

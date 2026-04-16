@@ -1,0 +1,30 @@
+# Java/Maven
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# Maven wrapper
+.mvn/
+mvnw
+mvnw.cmd
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+
+# Sensitive info (Placeholders for GCP)
+# (Optionally exclude k8s files if you prefer developers to provide their own)
