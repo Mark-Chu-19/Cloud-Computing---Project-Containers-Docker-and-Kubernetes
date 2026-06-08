@@ -38,8 +38,8 @@ public class ProfileApplication {
             LOGGER.info("");
 
             // fetch an individual profile by ID
-            repository.findById(1L).ifPresent(profile -> {
-                LOGGER.info("Profile found with findById(1L):");
+            repository.findById("alice").ifPresent(profile -> {
+                LOGGER.info("Profile found with findById(\"alice\"):");
                 LOGGER.info("--------------------------------");
                 LOGGER.info(profile.toString());
                 LOGGER.info("");
