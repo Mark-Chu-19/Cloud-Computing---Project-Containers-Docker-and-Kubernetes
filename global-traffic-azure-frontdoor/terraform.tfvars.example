@@ -1,0 +1,5 @@
+subscription_id = "YOUR_AZURE_SUBSCRIPTION_ID"
+resource_group_name = "wecloud-resilient-rg"
+front_door_profile_name = "wecloud-global-entry"
+gke_ingress_ip = "1.2.3.4"
+aks_ingress_ip = "5.6.7.8"

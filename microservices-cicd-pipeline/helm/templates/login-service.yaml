@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: spring-login-service
+spec:
+  type: {{ .Values.login.service.type }}
+  ports:
+  - port: {{ .Values.login.service.port }}
+    targetPort: {{ .Values.login.service.targetPort }}
+  selector:
+    app: login-service

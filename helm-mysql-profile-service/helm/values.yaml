@@ -1,0 +1,25 @@
+weCloud:
+  imageRegistry:
+    gcp: "us-east1-docker.pkg.dev/gcp-docker-kubernetes-1019/wecloudchat-repo"
+
+profile:
+  # Values used in deployment.yaml
+  releaseName: "spring-profile"
+  replicaCount: 3
+  repository: "us-east1-docker.pkg.dev/gcp-docker-kubernetes-1019/wecloudchat-repo/profile-service"
+  image: "profile-service"
+  tag: "task3"
+
+  # Values used in service.yaml
+  service:
+    type: LoadBalancer
+    port: 80
+    targetPort: 8080
+
+  # Values for MySQL environment variables (Injected into deployment.yaml)
+  mysql:
+    host: "mysql-profile"
+    user: "admin"
+    password: "YOUR_SECURE_PASSWORD"
+    port: "3306"
+

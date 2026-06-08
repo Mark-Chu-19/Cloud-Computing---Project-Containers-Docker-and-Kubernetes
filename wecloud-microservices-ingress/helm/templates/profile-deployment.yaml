@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  # Using the release name from values.yaml to ensure consistency
+  name: {{ .Values.profile.releaseName }}-deployment
+spec:
+  # Scaling to 3 replicas as specified in the configuration
+  replicas: {{ .Values.profile.replicaCount }}
+  selector:
+    matchLabels:
+      # Labels must match the template and service selector
+      app: profile-service
+  template:
+    metadata:
+      labels:
+        app: profile-service
+    spec:
+      containers:
+      - name: profile-service
+        # Combining registry, repository, and tag for the full image path
+        image: {{ .Values.weCloud.imageRegistry.gcp }}/{{ .Values.profile.repository }}:{{ .Values.profile.tag }}
+        ports:
+        - containerPort: 8080
+        env:
+        # 1. Database Connection details from ConfigMap
+        - name: MYSQL_DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: profile-config
+              key: MYSQL_DB_HOST
+        - name: MYSQL_DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: profile-config
+              key: MYSQL_DB_PORT
+        - name: MYSQL_DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: profile-config
+              key: MYSQL_DB_NAME
+        # 2. Database Authentication from Secret
+        - name: MYSQL_DB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: profile-secret
+              key: mysql-username
+        - name: MYSQL_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: profile-secret
+              key: mysql-password

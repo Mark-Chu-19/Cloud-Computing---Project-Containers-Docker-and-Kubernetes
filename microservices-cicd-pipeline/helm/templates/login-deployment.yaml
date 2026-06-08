@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  # Using the standardized name for the Login Service
+  name: spring-login-deployment
+spec:
+  {{- if not .Values.login.hpa.enabled }}
+  # Set replicas as defined in the login section of values.yaml
+  # replicas: managed by HPA
+  {{- end }}
+  selector:
+    matchLabels:
+      app: login-service
+  template:
+    metadata:
+      labels:
+        app: login-service
+    spec:
+      containers:
+      - name: login-service
+        # Combined image path from registry, repository, and tag
+        image: {{ .Values.weCloud.imageRegistry.gcp }}/{{ .Values.login.repository }}:{{ .Values.login.tag }}
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            cpu: {{ .Values.login.hpa.cpuRequest }}
+        env:
+        # 1. Database credentials from Secret
+        - name: MYSQL_DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: login-config
+              key: MYSQL_DB_HOST
+        - name: MYSQL_DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: login-config
+              key: MYSQL_DB_PORT
+        - name: MYSQL_DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: login-secret
+              key: mysql-username
+        - name: MYSQL_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: login-secret
+              key: mysql-password
+        # 2. Redirect IP for authentication - injected from values.yaml
+        - name: LOGIN_REDIRECT_IP
+          value: {{ .Values.login.redirectIp | quote }}
+        - name: CHAT_ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              name: login-config
+              key: CHAT_ENDPOINT
+{{- if .Values.login.hpa.enabled }}
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: spring-login-autoscaling
+  namespace: default
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: spring-login-deployment
+  minReplicas: {{ .Values.login.hpa.minReplicas }}
+  maxReplicas: {{ .Values.login.hpa.maxReplicas }}
+  targetCPUUtilizationPercentage: {{ .Values.login.hpa.targetCPUUtilizationPercentage }}
+{{- end }}
